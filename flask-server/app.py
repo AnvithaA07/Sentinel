@@ -33,13 +33,15 @@ def index():
     url ="https://api.xposedornot.com/v1/breach-analytics"
     query = {"email": email}
 
-    
     response = requests.get(url, headers=headers, params=query)
-    yearwise_details = response.json()['BreachMetrics']['yearwise_details'][0]
-    print(yearwise_details)
-    return jsonify(yearwise_details)
-
-    
+    breachsummary=[]
+    # print(response.json()['ExposedBreaches']['breaches_details'])
+    for breach in response.json()['ExposedBreaches']['breaches_details']:
+        breachsummary.append({'domain':breach['domain'],'logo':breach['logo'], 'data':breach['xposed_data'],'date':breach['xposed_date'],'records':breach['xposed_records']})
+    # yearwise_details = response.json()['BreachMetrics']['yearwise_details'][0]
+    # print(yearwise_details)
+    print(breachsummary)
+    return breachsummary
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)
