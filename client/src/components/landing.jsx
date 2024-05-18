@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from "react";
 import "../App.css";
 import { Card, TextInput } from "flowbite-react";
 import Logo from "./logo";
-import Navbar from "./navbar"; // Adjust the import path as necessary
+import Navbar from "./navbar";
 
 function Landing() {
   const [inputType, setInputType] = useState("email");
@@ -10,6 +11,7 @@ function Landing() {
   const [showLogo, setShowLogo] = useState(true);
   const [fadeLogo, setFadeLogo] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [breachData, setBreachData] = useState([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -17,8 +19,31 @@ function Landing() {
       setTimeout(() => {
         setShowLogo(false);
         setShowContent(true);
-      }, 2000); // Match the duration of the fade-out animation
-    }, 500); // Adjust the duration as necessary
+      }, 2000);
+    }, 500);
+    // const apiResponse = [
+    //   {
+    //     domain: "pizap.com",
+    //     logo: "https://xon-beta.pages.dev/static/logos/Pizap.png",
+    //     data: "Email addresses;Genders;Names;Geographic locations;Social media profiles",
+    //     date: "2017",
+    //     records: 41779112,
+    //   },
+    //   {
+    //     domain: "dubsmash.com",
+    //     logo: "https://xon-beta.pages.dev/static/logos/Dubsmash.png",
+    //     data: "Email addresses;Usernames;Passwords",
+    //     date: "2018",
+    //     records: 161835382,
+    //   },
+    //   {
+    //     domain: "zynga.com",
+    //     logo: "https://xon-beta.pages.dev/static/logos/Zynga.png",
+    //     data: "Email addresses;Usernames;Passwords;Phone numbers",
+    //     date: "2019",
+    //     records: 172817913,
+    //   },
+    // ];
 
     return () => clearTimeout(timer);
   }, []);
@@ -35,7 +60,7 @@ function Landing() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = { [inputType]: inputValue };
-    console.log("Sending data:", data); // Log the data being sent
+    console.log("Sending data:", data);
 
     try {
       const response = await fetch("http://127.0.0.1:8000/search", {
@@ -47,7 +72,8 @@ function Landing() {
       });
 
       const result = await response.json();
-      console.log("Received response:", result); // Log the response data
+      console.log("Received response:", result);
+      setBreachData(result);
     } catch (error) {
       console.error("Error submitting data:", error);
     }
@@ -59,7 +85,7 @@ function Landing() {
       {showContent && (
         <>
           <Navbar />
-          <Card className="input-card fade-in-slow mt-6">
+          <Card className="input-card fade-in-slow mt-6" style={{ filter: "drop-shadow(4px 4px 6px #010101)" }}>
             <form className="card-content flex flex-col gap-4 items-center" onSubmit={handleSubmit}>
               <div className="flex gap-4 mb-4 justify-center">
                 <button
@@ -97,6 +123,17 @@ function Landing() {
               </button>
             </form>
           </Card>
+          <div className="mt-6">
+            {breachData.map((item, index) => (
+              <Card key={index} className="mx-auto my-4 p-4 bg-gray-900">
+                <img src={item.logo} alt={item.domain} className="w-16 h-16 " />
+                <p className="font-bold text-center text">{item.domain}</p>
+                <p className="text-center">Data: {item.data}</p>
+                <p className="text-center">Date: {item.date}</p>
+                <p className="text-center">Records: {item.records}</p>
+              </Card>
+            ))}
+          </div>
         </>
       )}
     </div>
