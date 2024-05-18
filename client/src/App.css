@@ -2,7 +2,7 @@ body, html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Montserrat;
+  font-family: Orbitron;
 }
 
 header {
@@ -50,19 +50,36 @@ header {
   justify-content: center;
 }
 
-.card-content > div > input {
-  width: 100%; 
-  background-color: rgba(62, 59, 59, 0.251);
-  color: white;
-  border-radius: 1.2em;
-  padding: 0.5em;
-}
-
  input{
-  width: 100%;
+  width: 120% !important;
   background-color: rgba(39, 38, 38, 0.253) !important;
   color: white !important;
-  border-radius: 1.2em !important;
   padding: 0.5em !important;
   border: 1px solid white !important; 
 }
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  transition: opacity 2s ease-in-out;
+}
+
+.logo-container.fade-out {
+  opacity: 0;
+}
+
+.fade-in-slow {
+  animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+

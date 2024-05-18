@@ -23,20 +23,18 @@ from flask_cors import CORS
 import requests
 
 app = Flask(__name__)
-CORS(app, resources={r"/search": {"origins": "http://localhost:3000"}}) 
+CORS(app, resources={"/search": {"origins": "http://localhost:3001"}}) 
 
 @app.route('/search', methods=["POST"])
 def index():
     data = request.get_json()
     email = data.get('email')
-
-    url = "https://leakcheck.io/api/public"
-    querystring = {"check": email}
-
     headers = {}
+    url ="https://api.xposedornot.com/v1/breach-analytics"
+    querystring = {"email": email}
 
     response = requests.get(url, headers=headers, params=querystring)
-    print(response.json())  # Print the response data to the console
+    print(response.json()) 
 
     return jsonify(response.json())
 
