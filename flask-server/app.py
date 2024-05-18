@@ -31,12 +31,15 @@ def index():
     email = data.get('email')
     headers = {}
     url ="https://api.xposedornot.com/v1/breach-analytics"
-    querystring = {"email": email}
+    query = {"email": email}
 
-    response = requests.get(url, headers=headers, params=querystring)
-    print(response.json()) 
+    
+    response = requests.get(url, headers=headers, params=query)
+    yearwise_details = response.json()['BreachMetrics']['yearwise_details'][0]
+    print(yearwise_details)
+    return jsonify(yearwise_details)
 
-    return jsonify(response.json())
+    
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)

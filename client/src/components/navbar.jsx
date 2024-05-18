@@ -13,7 +13,7 @@ function Navbar(props) {
         </nav>
         <a href="#" className="flex flex-col items-center order-first lg:order-none lg:w-1/5 title-font font-medium text-white lg:items-center lg:justify-center mb-4 md:mb-0">
           <p className="text-4xl">ARMADILLO</p>
-          <img src={Logo1} alt="Logo" className="logo mt-2" />
+          <img src={Logo1} alt="Logo" className="logo mt-2 w-40 h-30" />
         </a>
         <div className="lg:w-2/5 inline-flex lg:justify-end ml-5 lg:ml-0">
           <button className=" text-black inline-flex items-center border-0 py-1 px-3 focus:outline-none hover:bg-gray-700 rounded mt-4 md:mt-0">

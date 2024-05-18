@@ -18,7 +18,7 @@ function Landing() {
         setShowLogo(false);
         setShowContent(true);
       }, 2000); // Match the duration of the fade-out animation
-    }, 2000); // Adjust the duration as necessary
+    }, 500); // Adjust the duration as necessary
 
     return () => clearTimeout(timer);
   }, []);
