@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import "../App.css";
 import { Card, TextInput } from "flowbite-react";
 import Logo from "./logo";
 import Navbar from "./navbar";
+import Plot from "react-plotly.js";
 
 function Landing() {
   const [inputType, setInputType] = useState("email");
@@ -12,6 +12,10 @@ function Landing() {
   const [fadeLogo, setFadeLogo] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [breachData, setBreachData] = useState([]);
+  const [risk, setRisk] = useState([]);
+  const [years, setYears] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -21,29 +25,6 @@ function Landing() {
         setShowContent(true);
       }, 2000);
     }, 500);
-    // const apiResponse = [
-    //   {
-    //     domain: "pizap.com",
-    //     logo: "https://xon-beta.pages.dev/static/logos/Pizap.png",
-    //     data: "Email addresses;Genders;Names;Geographic locations;Social media profiles",
-    //     date: "2017",
-    //     records: 41779112,
-    //   },
-    //   {
-    //     domain: "dubsmash.com",
-    //     logo: "https://xon-beta.pages.dev/static/logos/Dubsmash.png",
-    //     data: "Email addresses;Usernames;Passwords",
-    //     date: "2018",
-    //     records: 161835382,
-    //   },
-    //   {
-    //     domain: "zynga.com",
-    //     logo: "https://xon-beta.pages.dev/static/logos/Zynga.png",
-    //     data: "Email addresses;Usernames;Passwords;Phone numbers",
-    //     date: "2019",
-    //     records: 172817913,
-    //   },
-    // ];
 
     return () => clearTimeout(timer);
   }, []);
@@ -55,6 +36,10 @@ function Landing() {
   const handleTypeChange = (type) => {
     setInputType(type);
     setInputValue("");
+    setBreachData([]);
+    setRisk([]);
+    setYears([]);
+    setSubmitted(false);
   };
 
   const handleSubmit = async (e) => {
@@ -63,7 +48,7 @@ function Landing() {
     console.log("Sending data:", data);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/search", {
+      const response = await fetch(`http://127.0.0.1:8000/${inputType}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,19 +58,29 @@ function Landing() {
 
       const result = await response.json();
       console.log("Received response:", result);
-      setBreachData(result);
+
+      if (inputType === "email") {
+        setBreachData(result[0]);
+        setRisk(result[1]);
+        setYears(result[2]);
+      } else {
+        setBreachData(result[0]);
+        if (result[1] === "success") setStatus(true);
+      }
+
+      setSubmitted(true);
     } catch (error) {
       console.error("Error submitting data:", error);
     }
   };
 
   return (
-    <div id="land" className="landing-container h-screen flex flex-col items-center justify-center">
+    <div id="land" className="landing-container flex flex-col items-center justify-center">
       {showLogo && <Logo fadeOut={fadeLogo} />}
       {showContent && (
         <>
           <Navbar />
-          <Card className="input-card fade-in-slow mt-6" style={{ filter: "drop-shadow(4px 4px 6px #010101)" }}>
+          <Card className="input-card fade-in-slow mt-6 my-10" style={{ filter: "drop-shadow(4px 4px 6px #010101)" }}>
             <form className="card-content flex flex-col gap-4 items-center" onSubmit={handleSubmit}>
               <div className="flex gap-4 mb-4 justify-center">
                 <button
@@ -100,11 +95,11 @@ function Landing() {
                 <button
                   type="button"
                   className={`px-4 py-2 rounded ${
-                    inputType === "username" ? "bg-[#9748FF] text-white" : "bg-white text-[#333]"
+                    inputType === "domain" ? "bg-[#9748FF] text-white" : "bg-white text-[#333]"
                   }`}
-                  onClick={() => handleTypeChange("username")}
+                  onClick={() => handleTypeChange("domain")}
                 >
-                  Username
+                  Domain
                 </button>
               </div>
               <div className="w-full">
@@ -123,16 +118,82 @@ function Landing() {
               </button>
             </form>
           </Card>
+          {submitted && breachData.length > 0 && inputType === "email" ? (
+            <div className="charts-container flex flex-row gap-4">
+              <Plot
+                data={[
+                  {
+                    domain: { x: [0, 1], y: [0, 1] },
+                    value: risk,
+                    title: { text: "Risk Score" },
+                    type: "indicator",
+                    mode: "gauge+number",
+                    gauge: {
+                      axis: { range: [null, 150] },
+                      bar: { color: risk < 25 ? "green" : "red" },
+                    },
+                  },
+                ]}
+                layout={{
+                  width: 600,
+                  height: 500,
+                  paper_bgcolor: "black",
+                  font: { color: "white", family: "Arial" },
+                  margin: { t: 0, b: 0 },
+                }}
+              />
+              <Plot
+                data={[
+                  {
+                    x: Object.keys(years),
+                    y: Object.values(years),
+                    type: "scatter",
+                  },
+                ]}
+                layout={{
+                  width: 645,
+                  height: 400,
+                  title: "Breaches over the years",
+                  plot_bgcolor: "black",
+                  paper_bgcolor: "black",
+                  font: { color: "white" },
+                }}
+              />
+            </div>
+          ) : null}
           <div className="mt-6">
-            {breachData.map((item, index) => (
-              <Card key={index} className="mx-auto my-4 p-4 bg-gray-900">
-                <img src={item.logo} alt={item.domain} className="w-16 h-16 " />
-                <p className="font-bold text-center text">{item.domain}</p>
-                <p className="text-center">Data: {item.data}</p>
-                <p className="text-center">Date: {item.date}</p>
-                <p className="text-center">Records: {item.records}</p>
-              </Card>
-            ))}
+            {breachData.length > 0 ? (
+              breachData.map((item, index) => (
+                <Card key={index} className="mx-auto my-4 p-4 bg-gray-900">
+                  <img src={item.logo} alt={item.domain} className="w-16 h-16 " />
+                  {inputType === "email" ? (
+                    <>
+                      <p className="font-bold text-center text-2xl">{item.domain}</p>
+                      <p className="text-center">Data: {item.data}</p>
+                      <p className="text-center">Date: {item.date}</p>
+                      <p className="text-center">Records: {item.records}</p>
+                    </>
+                  ) : (
+                    status && (
+                      <>
+                        <p className="font-bold text-center text">Records Breached : {item.records}</p>
+                        <p className="text-center">Date: {item.date}</p>
+                        <p className="text-center">Description: {item.description}</p>
+                        <p className="text-center">Records: {item.fields}</p>
+                        <p className="text-center">
+                          To know more:{" "}
+                          <a className="hover:underline" href={item.url}>
+                            {item.url}
+                          </a>
+                        </p>
+                      </>
+                    )
+                  )}
+                </Card>
+              ))
+            ) : (
+              submitted && <p className="text-white text-center mb-4">You're safe!</p>
+            )}
           </div>
         </>
       )}

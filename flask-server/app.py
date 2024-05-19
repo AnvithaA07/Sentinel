@@ -23,10 +23,12 @@ from flask_cors import CORS
 import requests
 
 app = Flask(__name__)
-CORS(app, resources={"/search": {"origins": "http://localhost:3001"}}) 
+CORS(app, resources={
+    "/email": {"origins": "http://localhost:3000"},
+    "/domain" : {"origins": "http://localhost:3000"}}) 
 
-@app.route('/search', methods=["POST"])
-def index():
+@app.route('/email', methods=["POST"])
+def email():
     data = request.get_json()
     email = data.get('email')
     headers = {}
@@ -35,13 +37,51 @@ def index():
 
     response = requests.get(url, headers=headers, params=query)
     breachsummary=[]
+    risk = None
+    yearwise_details= None
+    industry_details= None
     # print(response.json()['ExposedBreaches']['breaches_details'])
-    for breach in response.json()['ExposedBreaches']['breaches_details']:
-        breachsummary.append({'domain':breach['domain'],'logo':breach['logo'], 'data':breach['xposed_data'],'date':breach['xposed_date'],'records':breach['xposed_records']})
-    # yearwise_details = response.json()['BreachMetrics']['yearwise_details'][0]
+    try:
+        for breach in response.json()['ExposedBreaches']['breaches_details']:
+            breachsummary.append({'domain':breach['breach'],'logo':breach['logo'], 'data':breach['xposed_data'],'date':breach['xposed_date'],'records':breach['xposed_records']})
+        
+        yearwise_details = response.json()['BreachMetrics']['yearwise_details'][0]
+        # industry_details = response.json()['BreachMetrics']['industry'][0]
+        # print(industry_details)
     # print(yearwise_details)
+        risk = response.json()['BreachMetrics']['risk'][0]['risk_score']
+    except:
+        pass
+    # print(breachsummary)
+    return [breachsummary, risk, yearwise_details]
+
+
+@app.route('/domain', methods=["POST"])
+def domain():
+    data = request.get_json()
+    domain = data.get('domain')
+    headers = {}
+    url = "https://api.xposedornot.com/v1/breaches"
+    query = {"domain": domain}
+    breachsummary = []
+
+    response = requests.get(url, headers=headers, params=query)
+    try:
+        breaches = response.json().get('exposedBreaches', [{}])
+        for breach in breaches:
+            
+            breachsummary.append({
+                "fields": ", ".join([str(item) for item in breach.get('exposedData')]),
+                "date": breach.get('breachedDate')[:10],
+                "records": breach.get('exposedRecords'),
+                "description": breach.get('exposureDescription'),
+                "logo": breach.get('logo'),
+                "url": breach.get('referenceURL') 
+            })
+    except Exception as e:
+        print(f"Error: {e}")
     print(breachsummary)
-    return breachsummary
+    return [breachsummary, response.json().get('status')]
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)

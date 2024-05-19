@@ -2,6 +2,9 @@ body, html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.armadillo{
   font-family: Orbitron;
 }
 
@@ -13,8 +16,9 @@ header {
 }
 
 .landing-container {
+  font-family: Montserrat;
   padding-top: 60px;
-  height: 100vh;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
