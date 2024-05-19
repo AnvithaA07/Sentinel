@@ -75,7 +75,7 @@ function Landing() {
   };
 
   return (
-    <div id="land" className="landing-container flex flex-col items-center justify-center">
+    <div id="land" className="landing-container min-h-screen flex flex-col items-center justify-center">
       {showLogo && <Logo fadeOut={fadeLogo} />}
       {showContent && (
         <>
@@ -100,6 +100,15 @@ function Landing() {
                   onClick={() => handleTypeChange("domain")}
                 >
                   Domain
+                </button>
+                <button
+                  type="button"
+                  className={`px-4 py-2 rounded ${
+                    inputType === "password" ? "bg-[#9748FF] text-white" : "bg-white text-[#333]"
+                  }`}
+                  onClick={() => handleTypeChange("password")}
+                >
+                  Password
                 </button>
               </div>
               <div className="w-full">
@@ -182,7 +191,7 @@ function Landing() {
                         <p className="text-center">Records: {item.fields}</p>
                         <p className="text-center">
                           To know more:{" "}
-                          <a className="hover:underline" href={item.url}>
+                          <a className="hover:underline" style={{color: "blue"}} href={item.url} >
                             {item.url}
                           </a>
                         </p>
@@ -192,7 +201,7 @@ function Landing() {
                 </Card>
               ))
             ) : (
-              submitted && <p className="text-white text-center mb-4">You're safe!</p>
+              submitted && <p className="text-white text-center mb-4 text-4xl font-bold">You're safe!</p>
             )}
           </div>
         </>
