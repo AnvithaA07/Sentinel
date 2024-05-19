@@ -21,12 +21,22 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
+from Crypto.Hash import keccak
+import urllib.parse
+import requests
+
 
 app = Flask(__name__)
 CORS(app, resources={
     "/email": {"origins": "http://localhost:3001"},
     "/domain" : {"origins": "http://localhost:3001"},
     "/password" : {"origins": "http://localhost:3001"}}) 
+
+def keccak_hash(pwd):
+    k = keccak.new(digest_bits=512)
+    k.update(pwd)
+    print(k.hexdigest())
+    return k.hexdigest()[:10]
 
 @app.route('/email', methods=["POST"])
 def email():
@@ -88,12 +98,12 @@ def domain():
 def password():
     data = request.get_json()
     password = data.get('password')
-    headers = {}
-    url = f"https://passwords.xposedornot.com/api/v1/pass/anon/{password}"
-    query = {}
     breachsummary = []
 
-    response = requests.get(url, headers=headers, params=query)
+    pwd_hash = keccak_hash(password.encode())
+    koodudal = 'https://passwords.xposedornot.com/api/v1/pass/anon/' + urllib.parse.quote(pwd_hash)
+    response = requests.get(koodudal)
+    
     try:
         breaches = response.json()['SearchPassAnon']
         breachsummary.append({
