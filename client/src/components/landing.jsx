@@ -63,9 +63,11 @@ function Landing() {
         setBreachData(result[0]);
         setRisk(result[1]);
         setYears(result[2]);
-      } else {
+      } else if (inputType === "domain"){
         setBreachData(result[0]);
         if (result[1] === "success") setStatus(true);
+      } else {
+        setBreachData(result)
       }
 
       setSubmitted(true);
@@ -115,7 +117,7 @@ function Landing() {
                 <TextInput
                   className="input w-full"
                   id={inputType}
-                  type={inputType === "email" ? "email" : "text"}
+                  type={inputType === "email" ? "email" : inputType==="domain" ? "text" : "password"}
                   placeholder={`Enter your ${inputType}`}
                   value={inputValue}
                   onChange={handleInputChange}
@@ -174,17 +176,18 @@ function Landing() {
             {breachData.length > 0 ? (
               breachData.map((item, index) => (
                 <Card key={index} className="mx-auto my-4 p-4 bg-gray-900">
-                  <img src={item.logo} alt={item.domain} className="w-16 h-16 " />
                   {inputType === "email" ? (
                     <>
+                      <img src={item.logo} alt={item.domain} className="w-16 h-16 " />
                       <p className="font-bold text-center text-2xl">{item.domain}</p>
                       <p className="text-center">Data: {item.data}</p>
                       <p className="text-center">Date: {item.date}</p>
                       <p className="text-center">Records: {item.records}</p>
                     </>
-                  ) : (
+                  ) : inputType === "domain" ? (
                     status && (
                       <>
+                        <img src={item.logo} alt={item.domain} className="w-16 h-16 " />
                         <p className="font-bold text-center text">Records Breached : {item.records}</p>
                         <p className="text-center">Date: {item.date}</p>
                         <p className="text-center">Description: {item.description}</p>
@@ -195,6 +198,14 @@ function Landing() {
                             {item.url}
                           </a>
                         </p>
+                      </>
+                    )
+                  ) : (
+                    inputType === "password" && (
+                      <>
+                        <p className="font-bold text-center">Password Leaked!</p>
+                        <p className="text-center">Password Hash: {item.hash}</p>
+                        <p className="text-center">Records Found: {item.count}</p>
                       </>
                     )
                   )}

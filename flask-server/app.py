@@ -24,8 +24,9 @@ import requests
 
 app = Flask(__name__)
 CORS(app, resources={
-    "/email": {"origins": "http://localhost:3001"},
-    "/domain" : {"origins": "http://localhost:3001"}}) 
+    "/email": {"origins": "http://localhost:3000"},
+    "/domain" : {"origins": "http://localhost:3000"},
+    "/password" : {"origins": "http://localhost:3000"}}) 
 
 @app.route('/email', methods=["POST"])
 def email():
@@ -82,6 +83,28 @@ def domain():
         print(f"Error: {e}")
     print(breachsummary)
     return [breachsummary, response.json().get('status')]
+
+@app.route('/password', methods=["POST"])
+def password():
+    data = request.get_json()
+    password = data.get('password')
+    headers = {}
+    url = f"https://passwords.xposedornot.com/api/v1/pass/anon/{password}"
+    query = {}
+    breachsummary = []
+
+    response = requests.get(url, headers=headers, params=query)
+    try:
+        breaches = response.json()['SearchPassAnon']
+        breachsummary.append({
+            "hash" : breaches['anon'],
+            "count" : breaches['count']
+        })
+    except Exception as e:
+        print(f"Error: {e}")
+    print(breachsummary)
+    return breachsummary
+    
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)
