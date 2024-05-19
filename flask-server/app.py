@@ -24,8 +24,8 @@ import requests
 
 app = Flask(__name__)
 CORS(app, resources={
-    "/email": {"origins": "http://localhost:3000"},
-    "/domain" : {"origins": "http://localhost:3000"}}) 
+    "/email": {"origins": "http://localhost:3001"},
+    "/domain" : {"origins": "http://localhost:3001"}}) 
 
 @app.route('/email', methods=["POST"])
 def email():
