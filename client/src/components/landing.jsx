@@ -211,11 +211,9 @@ function Landing() {
                         <p className="font-bold text-center text-2xl">
                           {item.domain}
                         </p>
-                        <ul className="text-center list-disc list-inside">
-                          {item.data.split(";").map((dataItem, i) => (
-                            <li key={i}>{dataItem}</li>
-                          ))}
-                        </ul>
+                        <p className="text-center">
+                        Data: {item.data.split(";").join(", ")}
+                        </p>
                         <p className="text-center">
                           <strong>Date:</strong> {item.date}
                         </p>
