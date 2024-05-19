@@ -63,11 +63,9 @@ function Landing() {
         setBreachData(result[0]);
         setRisk(result[1]);
         setYears(result[2]);
-      } else if (inputType === "domain"){
+      } else {
         setBreachData(result[0]);
         if (result[1] === "success") setStatus(true);
-      } else {
-        setBreachData(result)
       }
 
       setSubmitted(true);
@@ -117,7 +115,7 @@ function Landing() {
                 <TextInput
                   className="input w-full"
                   id={inputType}
-                  type={inputType === "email" ? "email" : inputType==="domain" ? "text" : "password"}
+                  type={inputType === "email" ? "email" : "text"}
                   placeholder={`Enter your ${inputType}`}
                   value={inputValue}
                   onChange={handleInputChange}
@@ -175,26 +173,27 @@ function Landing() {
           <div className="mt-6">
             {breachData.length > 0 ? (
               breachData.map((item, index) => (
-                <Card key={index} className="mx-auto my-4 p-4 bg-gray-900">
+                <Card key={index} className="my-4 p-4 bg-gray-900">
+                  <div className="flex justify-center mb-4">
+                    <img src={item.logo} alt={item.domain} className="w-16 h-16" />
+                  </div>
                   {inputType === "email" ? (
                     <>
-                      <img src={item.logo} alt={item.domain} className="w-16 h-16 " />
                       <p className="font-bold text-center text-2xl">{item.domain}</p>
-                      <p className="text-center">Data: {item.data}</p>
-                      <p className="text-center">Date: {item.date}</p>
-                      <p className="text-center">Records: {item.records}</p>
+                      <p className="text-center"><strong>Breached Info:</strong> {item.data.split(";").join(", ")}</p>
+                      <p className="text-center"><strong>Date:</strong> {item.date}</p>
+                      <p className="text-center"><strong>Records:</strong> {item.records}</p>
                     </>
                   ) : inputType === "domain" ? (
                     status && (
                       <>
-                        <img src={item.logo} alt={item.domain} className="w-16 h-16 " />
                         <p className="font-bold text-center text">Records Breached : {item.records}</p>
                         <p className="text-center">Date: {item.date}</p>
                         <p className="text-center">Description: {item.description}</p>
                         <p className="text-center">Records: {item.fields}</p>
                         <p className="text-center">
                           To know more:{" "}
-                          <a className="hover:underline" style={{color: "blue"}} href={item.url} >
+                          <a className="hover:underline" style={{ color: "blue" }} href={item.url}>
                             {item.url}
                           </a>
                         </p>
@@ -203,9 +202,10 @@ function Landing() {
                   ) : (
                     inputType === "password" && (
                       <>
-                        <p className="font-bold text-center">Password Leaked!</p>
-                        <p className="text-center">Password Hash: {item.hash}</p>
-                        <p className="text-center">Records Found: {item.count}</p>
+                        <p className="font-bold text-center">Password Safety Check</p>
+                        <p className="text-center">Password: {item.password}</p>
+                        <p className="text-center">Breaches: {item.breaches}</p>
+                        <p className="text-center">Last Breach Date: {item.lastBreachDate}</p>
                       </>
                     )
                   )}
