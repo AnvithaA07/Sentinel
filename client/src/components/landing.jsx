@@ -85,6 +85,7 @@ function Landing() {
       {showContent && (
         <>
           <Navbar />
+          <p style={{fontFamily:"Orbitron", paddingBottom:"5px"}}>UNCOVERING THE HIDDEN, PROTECTING THE EXPOSED</p>
           <Card
             className="input-card fade-in-slow mt-6 my-10"
             style={{ filter: "drop-shadow(4px 4px 6px #010101)" }}
