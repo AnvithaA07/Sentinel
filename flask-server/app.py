@@ -18,6 +18,7 @@
 # if __name__ == '__main__':
 #     app.run(host='127.0.0.1', port=8000, debug=True)
 
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
@@ -28,9 +29,9 @@ import requests
 
 app = Flask(__name__)
 CORS(app, resources={
-    "/email": {"origins": "http://localhost:3001"},
-    "/domain" : {"origins": "http://localhost:3001"},
-    "/password" : {"origins": "http://localhost:3001"}}) 
+    "/email": {"origins": "http://localhost:3000"},
+    "/domain" : {"origins": "http://localhost:3000"},
+    "/password" : {"origins": "http://localhost:3000"}}) 
 
 def keccak_hash(pwd):
     k = keccak.new(digest_bits=512)
@@ -103,7 +104,7 @@ def password():
     pwd_hash = keccak_hash(password.encode())
     koodudal = 'https://passwords.xposedornot.com/api/v1/pass/anon/' + urllib.parse.quote(pwd_hash)
     response = requests.get(koodudal)
-    
+
     try:
         breaches = response.json()['SearchPassAnon']
         breachsummary.append({
